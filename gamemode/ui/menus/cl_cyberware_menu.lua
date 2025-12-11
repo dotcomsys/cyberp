@@ -8,10 +8,12 @@ local function rebuildSlots(body, data)
     if not IsValid(body.Grid) then return end
     body.Grid:Clear()
 
-    local cyber = data or CybeRp.UI.State:GetCyberware()
+    local cyber = data or (CybeRp.UI.State and CybeRp.UI.State.GetCyberware and CybeRp.UI.State:GetCyberware()) or {}
 
-    body.Essence:SetText(string.format("Essence: %.1f / %.1f", cyber.essenceUsed or 0, cyber.essence or 6))
-    body.Essence:SizeToContents()
+    if IsValid(body.Essence) then
+        body.Essence:SetText(string.format("Essence: %.1f / %.1f", cyber.essenceUsed or 0, cyber.essence or 6))
+        body.Essence:SizeToContents()
+    end
 
     local slots = cyber.slots or {}
     for _, slotId in ipairs(defaultSlots) do
@@ -87,6 +89,19 @@ end
 
 concommand.Add("cyberp_cyberware", function()
     CybeRp.UI.Cyberware.Open()
+end)
+
+-- Allow toggle behavior
+function CybeRp.UI.Cyberware.Toggle()
+    if IsValid(CybeRp.UI.ActiveWindows and CybeRp.UI.ActiveWindows["cyberware"]) then
+        CybeRp.UI.ActiveWindows["cyberware"]:Remove()
+        return
+    end
+    CybeRp.UI.Cyberware.Open()
+end
+
+concommand.Add("cyberp_cyberware_toggle", function()
+    CybeRp.UI.Cyberware.Toggle()
 end)
 
 

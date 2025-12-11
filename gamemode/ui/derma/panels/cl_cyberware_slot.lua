@@ -1,3 +1,81 @@
+local rarityColors = {
+    common = Color(170, 190, 205),
+    uncommon = Color(0, 200, 180),
+    rare = Color(0, 140, 255),
+    epic = Color(200, 80, 255),
+    legendary = Color(255, 170, 0),
+}
+
+local SLOT_LABELS = {
+    HEAD = "Optics",
+    NEURAL = "Neural",
+    TORSO = "Torso",
+    ARMS = "Arms",
+    LEGS = "Legs",
+}
+
+local PANEL = {}
+
+function PANEL:Init()
+    self:SetSize(140, 120)
+    self.slotId = "UNKNOWN"
+    self.module = nil
+
+    self.ActivateBtn = vgui.Create("CybeRpPanelButton", self)
+    self.ActivateBtn:SetText("Activate")
+    self.ActivateBtn:SetWide(90)
+    self.ActivateBtn:SetTall(24)
+    self.ActivateBtn:SetVisible(false)
+    self.ActivateBtn.DoClick = function()
+        if not self.module or not self.module.id then return end
+        if CybeRp.NetActivateCyberware then
+            CybeRp.NetActivateCyberware(self.module.id)
+        end
+    end
+end
+
+function PANEL:SetSlotId(slot)
+    self.slotId = slot or "UNKNOWN"
+end
+
+function PANEL:SetModule(mod)
+    self.module = mod
+    self.ActivateBtn:SetVisible(mod and mod.passive == false)
+end
+
+function PANEL:Paint(w, h)
+    local colPanel = CybeRp.UI.GetColor("panel")
+    draw.RoundedBox(8, 0, 0, w, h, colPanel)
+
+    local label = SLOT_LABELS[self.slotId] or self.slotId or "Slot"
+    CybeRp.UI.DrawShadowedText(label, "CybeRp.Small", 8, 6, CybeRp.UI.GetColor("muted"), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+
+    if not self.module then
+        CybeRp.UI.DrawShadowedText("Empty", "CybeRp.Body", w / 2, h / 2, CybeRp.UI.GetColor("muted"), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        return
+    end
+
+    local name = self.module.name or self.module.id or "Unknown"
+    local desc = self.module.desc or ""
+    local accent = CybeRp.UI.GetColor("accent")
+    if self.module.rarity then
+        accent = rarityColors[string.lower(self.module.rarity)] or accent
+    end
+
+    CybeRp.UI.DrawShadowedText(name, "CybeRp.Subheader", 8, 28, accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+    CybeRp.UI.DrawShadowedText(desc, "CybeRp.Tiny", 8, 52, CybeRp.UI.GetColor("muted"), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+
+    if self.module.cooldown then
+        CybeRp.UI.DrawShadowedText("CD: " .. tostring(self.module.cooldown) .. "s", "CybeRp.Tiny", w - 8, h - 8, CybeRp.UI.GetColor("muted"), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
+    end
+end
+
+function PANEL:PerformLayout(w, h)
+    self.ActivateBtn:SetPos(w - self.ActivateBtn:GetWide() - 8, h - self.ActivateBtn:GetTall() - 8)
+end
+
+vgui.Register("CybeRpCyberwareSlot", PANEL, "DPanel")
+
 local PANEL = {}
 
 function PANEL:Init()
