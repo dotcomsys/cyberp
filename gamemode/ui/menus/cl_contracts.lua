@@ -119,4 +119,11 @@ timer.Create("CybeRp_Contracts_UIRefresh", 5, 0, function()
     end
 end)
 
+-- Optional marker toggle (stub; you can add halos later)
+concommand.Add("cyberp_contracts_toggle_markers", function()
+    CybeRp.UI.Settings = CybeRp.UI.Settings or {}
+    CybeRp.UI.Settings.contractMarkers = not CybeRp.UI.Settings.contractMarkers
+    chat.AddText(Color(0, 255, 214), "[CybeRp] Contract markers: ", tostring(CybeRp.UI.Settings.contractMarkers))
+end)
+
 

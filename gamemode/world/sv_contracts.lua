@@ -146,5 +146,16 @@ hook.Add("CybeRp_RaidCompleted", "CybeRp_Contracts_RaidObjective", function(ply,
     end
 end)
 
+hook.Add("CybeRp_EscortArrived", "CybeRp_Contracts_EscortObjective", function(ply, escortId)
+    local active = getActiveTable(ply)
+    for id, a in pairs(active) do
+        local c = findContract(id)
+        if c and c.type == "escort" then
+            World:CompleteContract(ply, id)
+            break
+        end
+    end
+end)
+
 
 

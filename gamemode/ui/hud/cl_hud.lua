@@ -88,15 +88,17 @@ local function drawContractsBadge()
     local contracts = CybeRp.ClientState and CybeRp.ClientState.contracts or {}
     local activeCount = 0
     local nearest = math.huge
+    local nearestLabel = nil
     for _, c in ipairs(contracts or {}) do
         if c.active and c.deadline then
             activeCount = activeCount + 1
             nearest = math.min(nearest, c.deadline - CurTime())
+            nearestLabel = nearestLabel or (c.type and c.type:upper() or c.id)
         end
     end
     if activeCount <= 0 then return end
 
-    local text = string.format("CONTRACTS: %d (%.0fs)", activeCount, math.max(0, nearest))
+    local text = string.format("CONTRACTS: %d (%.0fs%s)", activeCount, math.max(0, nearest), nearestLabel and (" " .. nearestLabel) or "")
     local w, h = surface.GetTextSize(text)
     surface.SetFont("CybeRp.Small")
     w, h = surface.GetTextSize(text)
