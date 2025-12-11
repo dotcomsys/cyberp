@@ -114,6 +114,10 @@ function Net.PushHackResult(target, payload)
     return sendMessage(NET.HACK_RESULT, target, payload or {}, "json")
 end
 
+function Net.PushVendorStock(target, payload)
+    return sendMessage(NET.VENDOR_STOCK, target, payload or {}, "json")
+end
+
 -- Server -> client RPC helper. Clients dispatch via hook: CybeRp_RPC_<method>.
 function Net.SendRPC(target, method, args)
     if not isstring(method) or method == "" then
@@ -168,6 +172,20 @@ net.Receive(NET.ACTIVATE_CYBERWARE, function(_, ply)
     if not IsValid(ply) then return end
     if not CybeRp.Cyberware or not CybeRp.Cyberware.Activate then return end
     CybeRp.Cyberware.Activate(ply, cyberId)
+end)
+
+net.Receive(NET.VENDOR_BUY, function(_, ply)
+    local itemId = net.ReadString()
+    local amount = net.ReadUInt(8)
+    if not CybeRp.Economy or not CybeRp.Economy.HandleBuy then return end
+    CybeRp.Economy.HandleBuy(ply, itemId, amount)
+end)
+
+net.Receive(NET.VENDOR_SELL, function(_, ply)
+    local itemId = net.ReadString()
+    local amount = net.ReadUInt(8)
+    if not CybeRp.Economy or not CybeRp.Economy.HandleSell then return end
+    CybeRp.Economy.HandleSell(ply, itemId, amount)
 end)
 
 

@@ -116,6 +116,9 @@ local HANDLERS = {
     [NET.HACK_RESULT] = function(payload)
         dispatchHook("HackResult", payload)
     end,
+    [NET.VENDOR_STOCK] = function(payload)
+        dispatchHook("VendorStock", payload)
+    end,
     [NET.RPC] = handleRPC
 }
 

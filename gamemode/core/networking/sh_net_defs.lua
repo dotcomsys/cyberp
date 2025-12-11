@@ -28,6 +28,9 @@ define("DROP_ITEM", "cyberp_drop_item")
 define("ACTIVATE_CYBERWARE", "cyberp_activate_cyberware")
 define("WORLD_ALERT", "cyberp_world_alert")
 define("HACK_RESULT", "cyberp_hack_result")
+define("VENDOR_STOCK", "cyberp_vendor_stock")
+define("VENDOR_BUY", "cyberp_vendor_buy")
+define("VENDOR_SELL", "cyberp_vendor_sell")
 
 -- Payload codecs: default to PON + util.Compress, fallback to JSON.
 local CODECS = {
