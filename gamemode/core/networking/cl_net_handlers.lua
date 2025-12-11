@@ -71,6 +71,8 @@ local function handleInventory(payload)
     if CybeRp.UI and CybeRp.UI.State and CybeRp.UI.State.ApplyInventorySnapshot then
         CybeRp.UI.State:ApplyInventorySnapshot(payload or {})
     end
+
+    hook.Run("CybeRp_UI_InventoryUpdated", payload or {})
 end
 
 local function handleCyberware(payload)

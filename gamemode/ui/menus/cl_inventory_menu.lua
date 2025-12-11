@@ -6,7 +6,7 @@ local function rebuildGrid(panel, data)
     if not IsValid(panel.Grid) then return end
     panel.Grid:Clear()
 
-    local inv = data or CybeRp.UI.State:GetInventory()
+    local inv = data or (CybeRp.UI.State and CybeRp.UI.State.GetInventory and CybeRp.UI.State:GetInventory()) or {}
     panel.WeightLabel:SetText(string.format("Weight: %.1f / %.1f", inv.weight or 0, inv.maxWeight or inv.capacity or 0))
 
     for slotId = 1, inv.capacity or 0 do
@@ -83,7 +83,7 @@ local function buildInventoryFrame()
     grid:DockMargin(4, 4, 4, 4)
     frame.Body.Grid = grid
 
-    rebuildGrid(frame.Body, CybeRp.UI.State:GetInventory())
+    rebuildGrid(frame.Body, (CybeRp.UI.State and CybeRp.UI.State.GetInventory and CybeRp.UI.State:GetInventory()) or {})
 
     frame:MakePopup()
     frame:Center()
@@ -104,8 +104,20 @@ function CybeRp.UI.Inventory.Open()
     buildInventoryFrame()
 end
 
+function CybeRp.UI.Inventory.Toggle()
+    if IsValid(CybeRp.UI.ActiveWindows and CybeRp.UI.ActiveWindows["inventory"]) then
+        CybeRp.UI.ActiveWindows["inventory"]:Remove()
+        return
+    end
+    CybeRp.UI.Inventory.Open()
+end
+
 concommand.Add("cyberp_inventory", function()
     CybeRp.UI.Inventory.Open()
+end)
+
+concommand.Add("cyberp_inventory_toggle", function()
+    CybeRp.UI.Inventory.Toggle()
 end)
 
 
