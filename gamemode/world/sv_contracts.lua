@@ -62,6 +62,7 @@ function World:AcceptContract(ply, contractId)
         deadline = CurTime() + (c.duration or 900),
         status = "active",
         progress = 0,
+        target = c.target,
     }
     if CybeRp.Net and CybeRp.Net.PushContracts then
         CybeRp.Net.PushContracts(ply, World:GetContractsForPlayer(ply))
@@ -168,6 +169,7 @@ hook.Add("CybeRp_EscortArrived", "CybeRp_Contracts_EscortObjective", function(pl
     for id, a in pairs(active) do
         local c = findContract(id)
         if c and c.type == "escort" then
+            a.progress = 1
             World:CompleteContract(ply, id)
             break
         end

@@ -14,6 +14,11 @@ function ENT:Initialize()
     self:SetMaxHealth(120)
     self.PathIndex = 1
     self.TimeoutAt = CurTime() + 300
+    self.PathNodes = {}
+end
+
+function ENT:SetEscortPath(nodes)
+    self.PathNodes = nodes or {}
 end
 
 function ENT:Think()

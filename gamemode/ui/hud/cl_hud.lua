@@ -89,16 +89,18 @@ local function drawContractsBadge()
     local activeCount = 0
     local nearest = math.huge
     local nearestLabel = nil
+    local nearestProgress = nil
     for _, c in ipairs(contracts or {}) do
         if c.active and c.deadline then
             activeCount = activeCount + 1
             nearest = math.min(nearest, c.deadline - CurTime())
             nearestLabel = nearestLabel or (c.type and c.type:upper() or c.id)
+            nearestProgress = nearestProgress or c.progress
         end
     end
     if activeCount <= 0 then return end
 
-    local text = string.format("CONTRACTS: %d (%.0fs%s)", activeCount, math.max(0, nearest), nearestLabel and (" " .. nearestLabel) or "")
+    local text = string.format("CONTRACTS: %d (%.0fs%s%s)", activeCount, math.max(0, nearest), nearestLabel and (" " .. nearestLabel) or "", nearestProgress and (" " .. tostring(math.floor((nearestProgress or 0) * 100)) .. "%") or "")
     local w, h = surface.GetTextSize(text)
     surface.SetFont("CybeRp.Small")
     w, h = surface.GetTextSize(text)
@@ -129,6 +131,32 @@ local function drawObjectiveMarkers()
         end
     end
 end
+
+local halosEnabled = false
+concommand.Add("cyberp_contracts_toggle_halos", function()
+    halosEnabled = not halosEnabled
+    chat.AddText(Color(0, 255, 214), "[CybeRp] Contract halos: ", tostring(halosEnabled))
+end)
+
+hook.Add("PreDrawHalos", "CybeRp_ContractHalos", function()
+    if not halosEnabled or not CybeRp.UI.Settings or not CybeRp.UI.Settings.contractMarkers then return end
+    local contracts = CybeRp.ClientState and CybeRp.ClientState.contracts or {}
+    local entsToHalo = {}
+    for _, c in ipairs(contracts or {}) do
+        if c.active and c.target then
+            for _, ent in ipairs(ents.GetAll()) do
+                if ent.GetZoneId and ent:GetZoneId() == c.target then
+                    entsToHalo[#entsToHalo + 1] = ent
+                elseif ent.GetEscortId and c.type == "escort" then
+                    entsToHalo[#entsToHalo + 1] = ent
+                end
+            end
+        end
+    end
+    if #entsToHalo > 0 then
+        halo.Add(entsToHalo, colors.accent, 2, 2, 1, true, true)
+    end
+end)
 
 function CybeRp.UI.HUD.DrawTargetHint(text)
     local w, h = 320, 36
