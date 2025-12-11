@@ -54,9 +54,20 @@ local function buildContractsFrame(data)
         reward:DockMargin(8, 0, 0, 8)
         reward:SizeToContents()
 
+        local status = vgui.Create("DLabel", row)
+        status:SetFont("CybeRp.Small")
+        local active = c.active == true
+        local remaining = c.deadline and math.max(0, c.deadline - CurTime()) or 0
+        local statusText = active and string.format("ACTIVE (%.0fs left)", remaining) or "Available"
+        status:SetText(statusText)
+        status:Dock(LEFT)
+        status:DockMargin(8, 0, 0, 8)
+        status:SizeToContents()
+
         local btnAccept = vgui.Create("CybeRpPanelButton", row)
-        btnAccept:SetText("Accept")
+        btnAccept:SetText(active and "Active" or "Accept")
         btnAccept:SetWide(90)
+        btnAccept:SetDisabled(active)
         btnAccept:Dock(RIGHT)
         btnAccept:DockMargin(8, 8, 8, 8)
         btnAccept.DoClick = function()
@@ -70,6 +81,7 @@ local function buildContractsFrame(data)
         btnComplete:SetWide(90)
         btnComplete:Dock(RIGHT)
         btnComplete:DockMargin(0, 8, 0, 8)
+        btnComplete:SetDisabled(not active)
         btnComplete.DoClick = function()
             net.Start(CybeRp.NET.CONTRACT_COMPLETE)
                 net.WriteString(c.id or "")
@@ -87,6 +99,12 @@ end)
 
 hook.Add("CybeRp_Net_Contracts", "CybeRp_UI_Contracts", function(payload)
     buildContractsFrame(payload or {})
+end)
+
+timer.Create("CybeRp_Contracts_UIRefresh", 5, 0, function()
+    if IsValid(CybeRp.UI.ActiveWindows and CybeRp.UI.ActiveWindows["contracts"]) then
+        requestContracts()
+    end
 end)
 
 

@@ -220,10 +220,8 @@ end)
 
 net.Receive(NET.CONTRACT_ACCEPT, function(_, ply)
     local contractId = net.ReadString()
-    if CybeRp.World and CybeRp.World.GetContractsForPlayer and CybeRp.Net and CybeRp.Net.PushContracts then
-        -- For now, just push the current pool back; later track accepted state.
-        local list = CybeRp.World:GetContractsForPlayer(ply)
-        CybeRp.Net.PushContracts(ply, list)
+    if CybeRp.World and CybeRp.World.AcceptContract then
+        CybeRp.World:AcceptContract(ply, contractId ~= "" and contractId or "deliver_datacube")
     end
 end)
 
