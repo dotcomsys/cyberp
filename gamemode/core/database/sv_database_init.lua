@@ -24,22 +24,28 @@ function CybeRp.DB.FromJSON(json)
     return {}
 end
 
+-- P0 bootstrap: create character + inventory tables.
 function CybeRp.DB.Initialize()
     query(string.format([[
         CREATE TABLE IF NOT EXISTS %s(
-            steamid TEXT PRIMARY KEY,
-            data TEXT NOT NULL
-        )
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            steamid TEXT UNIQUE,
+            name TEXT,
+            job TEXT,
+            faction TEXT,
+            credits INTEGER,
+            data TEXT
+        );
     ]], CHAR_TABLE))
 
     query(string.format([[
         CREATE TABLE IF NOT EXISTS %s(
             steamid TEXT PRIMARY KEY,
             items TEXT NOT NULL
-        )
+        );
     ]], INV_TABLE))
 
-    print("[CybeRp] Database Initialized (SQLite)")
+    print("[CybeRp] DB Initialized (SQLite)")
 end
 
 -- Expose table names for the store modules.
