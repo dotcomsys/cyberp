@@ -136,6 +136,10 @@ local HANDLERS = {
         CS.arrest = payload
         dispatchHook("Arrest", payload)
     end,
+    [NET.CONTRACTS_SYNC] = function(payload)
+        CS.contracts = payload or {}
+        dispatchHook("Contracts", payload)
+    end,
     [NET.RPC] = handleRPC
 }
 

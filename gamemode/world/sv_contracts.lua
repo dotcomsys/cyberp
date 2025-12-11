@@ -8,6 +8,7 @@ local CONTRACT_POOL = {
     { id = "deliver_datacube", type = "delivery", reward = 150, desc = "Deliver a datacube to the safe drop." },
     { id = "hack_terminal", type = "hack", reward = 200, desc = "Breach a marked terminal." },
     { id = "escort_asset", type = "escort", reward = 250, desc = "Escort an asset through the docks." },
+    { id = "raid_scout", type = "raid", reward = 220, desc = "Scout a raid entry point." },
 }
 
 function World:GetContractsForPlayer(ply)

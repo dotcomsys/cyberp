@@ -126,6 +126,10 @@ function Net.PushArrest(target, payload)
     return sendMessage(NET.ARREST_SYNC, target, payload or {}, "json")
 end
 
+function Net.PushContracts(target, payload)
+    return sendMessage(NET.CONTRACTS_SYNC, target, payload or {}, "json")
+end
+
 -- Server -> client RPC helper. Clients dispatch via hook: CybeRp_RPC_<method>.
 function Net.SendRPC(target, method, args)
     if not isstring(method) or method == "" then
@@ -212,6 +216,22 @@ net.Receive(NET.HACK_REQUEST, function(_, ply)
         maxDistance = 160,
     }
     CybeRp.World:BeginTerminalHack(ply, ent, meta, true) -- true to signal minigame kickoff
+end)
+
+net.Receive(NET.CONTRACT_ACCEPT, function(_, ply)
+    local contractId = net.ReadString()
+    if CybeRp.World and CybeRp.World.GetContractsForPlayer and CybeRp.Net and CybeRp.Net.PushContracts then
+        -- For now, just push the current pool back; later track accepted state.
+        local list = CybeRp.World:GetContractsForPlayer(ply)
+        CybeRp.Net.PushContracts(ply, list)
+    end
+end)
+
+net.Receive(NET.CONTRACT_COMPLETE, function(_, ply)
+    local contractId = net.ReadString()
+    if CybeRp.World and CybeRp.World.CompleteContract then
+        CybeRp.World:CompleteContract(ply, contractId)
+    end
 end)
 
 -- Receive hack minigame completion (true = success, false = failure)

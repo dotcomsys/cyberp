@@ -35,6 +35,8 @@ define("HACK_REQUEST", "cyberp_hack_request")
 define("HEAT_SYNC", "cyberp_heat_sync")
 define("ARREST_SYNC", "cyberp_arrest_sync")
 define("CONTRACTS_SYNC", "cyberp_contracts_sync")
+define("CONTRACT_ACCEPT", "cyberp_contract_accept")
+define("CONTRACT_COMPLETE", "cyberp_contract_complete")
 
 -- Payload codecs: default to PON + util.Compress, fallback to JSON.
 local CODECS = {
