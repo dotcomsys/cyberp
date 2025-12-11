@@ -36,6 +36,14 @@ local function cyberwareSnapshot(ply)
     return data.cyberware or {}
 end
 
+local function isValidItemId(id)
+    return isstring(id) and id ~= "" and #id <= 64
+end
+
+local function isValidCyberId(id)
+    return isstring(id) and id ~= "" and #id <= 64
+end
+
 local function sendMessage(msgName, target, payload, codec)
     if not msgName then return false end
 
@@ -126,5 +134,30 @@ function Api.BroadcastCyberware(ply)
     if not IsValid(ply) then return end
     return Net.PushCyberware(ply, cyberwareSnapshot(ply))
 end
+
+-- Client -> server handlers (validated)
+net.Receive(NET.USE_ITEM, function(_, ply)
+    local itemId = net.ReadString()
+    if not isValidItemId(itemId) then return end
+    if not IsValid(ply) then return end
+    if not CybeRp.Inventory or not CybeRp.Inventory.Use then return end
+    CybeRp.Inventory.Use(ply, itemId)
+end)
+
+net.Receive(NET.DROP_ITEM, function(_, ply)
+    local itemId = net.ReadString()
+    if not isValidItemId(itemId) then return end
+    if not IsValid(ply) then return end
+    if not CybeRp.Inventory or not CybeRp.Inventory.Drop then return end
+    CybeRp.Inventory.Drop(ply, itemId)
+end)
+
+net.Receive(NET.ACTIVATE_CYBERWARE, function(_, ply)
+    local cyberId = net.ReadString()
+    if not isValidCyberId(cyberId) then return end
+    if not IsValid(ply) then return end
+    if not CybeRp.Cyberware or not CybeRp.Cyberware.Activate then return end
+    CybeRp.Cyberware.Activate(ply, cyberId)
+end)
 
 

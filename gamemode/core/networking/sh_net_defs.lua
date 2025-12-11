@@ -23,6 +23,9 @@ define("CYBERWARE_UPDATE", "cyberp_cyberware_update")
 define("JOB_UPDATE", "cyberp_job_update")
 define("WORLD_EVENT", "cyberp_world_event")
 define("RPC", "cyberp_rpc_call")
+define("USE_ITEM", "cyberp_use_item")
+define("DROP_ITEM", "cyberp_drop_item")
+define("ACTIVATE_CYBERWARE", "cyberp_activate_cyberware")
 
 -- Payload codecs: default to PON + util.Compress, fallback to JSON.
 local CODECS = {

@@ -11,6 +11,28 @@ local NET = CybeRp.NET
 local Net = CybeRp.Networking
 local CS = CybeRp.ClientState
 
+-- Client → Server helpers
+function CybeRp.NetUseItem(itemId)
+    if not isstring(itemId) or itemId == "" then return end
+    net.Start(NET.USE_ITEM)
+        net.WriteString(itemId)
+    net.SendToServer()
+end
+
+function CybeRp.NetDropItem(itemId)
+    if not isstring(itemId) or itemId == "" then return end
+    net.Start(NET.DROP_ITEM)
+        net.WriteString(itemId)
+    net.SendToServer()
+end
+
+function CybeRp.NetActivateCyberware(cyberId)
+    if not isstring(cyberId) or cyberId == "" then return end
+    net.Start(NET.ACTIVATE_CYBERWARE)
+        net.WriteString(cyberId)
+    net.SendToServer()
+end
+
 local function safeCall(handler, payload)
     if not handler then return end
     local ok, err = pcall(handler, payload or {})
