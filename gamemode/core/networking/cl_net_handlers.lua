@@ -110,6 +110,12 @@ local HANDLERS = {
     [NET.CYBERWARE_UPDATE] = handleCyberware,
     [NET.JOB_UPDATE] = handleJob,
     [NET.WORLD_EVENT] = handleWorldEvent,
+    [NET.WORLD_ALERT] = function(payload)
+        dispatchHook("WorldAlert", payload)
+    end,
+    [NET.HACK_RESULT] = function(payload)
+        dispatchHook("HackResult", payload)
+    end,
     [NET.RPC] = handleRPC
 }
 

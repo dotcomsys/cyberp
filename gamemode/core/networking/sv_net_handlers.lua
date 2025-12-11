@@ -104,6 +104,16 @@ function Net.SendAlert(target, kind, payload)
     return sendMessage(NET.WORLD_EVENT, target, payload, "json")
 end
 
+function Net.PushWorldAlert(target, payload)
+    payload = payload or {}
+    payload.when = payload.when or CurTime()
+    return sendMessage(NET.WORLD_ALERT, target, payload, "json")
+end
+
+function Net.PushHackResult(target, payload)
+    return sendMessage(NET.HACK_RESULT, target, payload or {}, "json")
+end
+
 -- Server -> client RPC helper. Clients dispatch via hook: CybeRp_RPC_<method>.
 function Net.SendRPC(target, method, args)
     if not isstring(method) or method == "" then

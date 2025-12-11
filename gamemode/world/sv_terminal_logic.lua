@@ -22,6 +22,16 @@ function World:GetTerminalCooldown(id)
     return math.max(0, untilTime - CurTime())
 end
 
+function World:BroadcastAlert(message, level)
+    if CybeRp.Net and CybeRp.Net.PushWorldAlert then
+        CybeRp.Net.PushWorldAlert(nil, {
+            message = message,
+            level = level or "info",
+            when = CurTime()
+        })
+    end
+end
+
 function World:BeginTerminalHack(ply, ent, meta)
     if not IsValid(ply) or not IsValid(ent) or not meta then return end
 

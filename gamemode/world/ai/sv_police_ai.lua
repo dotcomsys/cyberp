@@ -6,6 +6,7 @@ local World = CybeRp.World
 local AI = CybeRp.World.AI
 
 AI.Police = AI.Police or { active = {}, quotas = { drones = 2, bots = 2, vendors = 1 } }
+AI.CrimeQueue = AI.CrimeQueue or {}
 
 local function debugLog(msg, ...)
     if CybeRp.Config and CybeRp.Config.Debug then
@@ -94,6 +95,30 @@ function AI:DispatchQuickResponse(pos, severity)
     end
 end
 
+function AI:ReportCrime(ply, factionId, severity, note)
+    if not IsValid(ply) then return end
+    table.insert(AI.CrimeQueue, {
+        ply = ply,
+        faction = factionId or "authority",
+        severity = severity or 1,
+        note = note or ""
+    })
+    debugLog("Crime queued for %s (sev %s)", ply:Nick(), tostring(severity))
+end
+
+local function processCrimeQueue()
+    if #AI.CrimeQueue == 0 then return end
+    local entry = table.remove(AI.CrimeQueue, 1)
+    if not entry or not IsValid(entry.ply) then return end
+
+    local pos = entry.ply:GetPos()
+    if entry.severity >= 2 then
+        AI:DispatchQuickResponse(pos, entry.severity)
+    else
+        World:BroadcastAlert(("Suspicious activity near %s"):format(entry.ply:Nick()), "warning")
+    end
+end
+
 local function maintainPresence()
     if countByClass("npc_cscanner") < AI.Police.quotas.drones then
         AI:SpawnDrone(Vector(0, 0, 120), "neon_patrol")
@@ -126,6 +151,11 @@ end)
 
 timer.Create("CybeRpWorld_PolicePulse", 45, 0, function()
     maintainPresence()
+    processCrimeQueue()
+end)
+
+hook.Add("CybeRp_CrimeRegistered", "CybeRpWorld_PoliceCrimeIntake", function(ply, factionId, severity, note)
+    AI:ReportCrime(ply, factionId, severity, note)
 end)
 
 

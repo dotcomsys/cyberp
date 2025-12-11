@@ -19,6 +19,7 @@ function CybeRp.Factions.RegisterCrime(ply, factionId, severity, note)
     if not IsValid(ply) then return end
     ply:AddCrime(factionId or "generic_crime", severity or 1, note)
     CybeRp.Factions.AddReputation(ply, factionId or "authority", -(severity or 1) * 5)
+    hook.Run("CybeRp_CrimeRegistered", ply, factionId or "authority", severity or 1, note)
 end
 
 hook.Add("PlayerLoadedData", "CybeRp_ValidateFaction", function(ply)
