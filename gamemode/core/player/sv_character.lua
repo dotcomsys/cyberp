@@ -162,9 +162,17 @@ function CybeRp.Player.Load(ply)
     local sid = ply:SteamID64()
     local stored = {}
     local storedInv = {}
+    local isNew = false
 
     if CybeRp.DB and CybeRp.DB.LoadCharacter then
         stored = CybeRp.DB.LoadCharacter(sid) or {}
+        if not stored or next(stored) == nil then
+            isNew = true
+            stored = {
+                id = sid,
+                credits = CybeRp.Config and CybeRp.Config.StartingCredits or CybeRp.Player.Defaults.credits or 500,
+            }
+        end
     end
 
     if CybeRp.DB and CybeRp.DB.LoadInventory then
