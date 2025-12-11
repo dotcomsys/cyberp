@@ -32,3 +32,8 @@ function CybeRp.Factions.GetDefaultId()
     return "neutral"
 end
 
+function CybeRp.Factions.IsMember(ply, factionId)
+    if not IsValid(ply) then return false end
+    return string.lower(ply:GetFaction() or "") == string.lower(factionId or "")
+end
+

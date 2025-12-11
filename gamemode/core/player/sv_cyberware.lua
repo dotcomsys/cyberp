@@ -101,6 +101,9 @@ function CybeRp.Cyberware.Install(ply, id)
     if not IsValid(ply) then return false, "invalid player" end
     local def = CybeRp.Cyberware.GetDefinition(id)
     if not def then return false, "unknown cyberware" end
+    if CybeRp.Jobs and CybeRp.Jobs.AllowsCyberware and not CybeRp.Jobs.AllowsCyberware(ply, id) then
+        return false, "job restricted"
+    end
 
     local data = ply:GetCybeData()
     local installed = data.cyberware or {}

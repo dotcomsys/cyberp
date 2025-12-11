@@ -3,8 +3,11 @@ include("cyberp/gamemode/core/jobs/sh_job_system.lua")
 
 function CybeRp.Jobs.Assign(ply, jobId)
     if not IsValid(ply) then return false end
+    local ok, reason = CybeRp.Jobs.CanJoin(ply, jobId)
+    if not ok then return false, reason end
+
     local job = CybeRp.Jobs.Get(jobId) or CybeRp.Jobs.Get(CybeRp.Jobs.GetDefaultId())
-    if not job then return false end
+    if not job then return false, "job missing" end
 
     ply:SetJob(job.id)
     if job.faction and CybeRp.Factions then
@@ -12,6 +15,15 @@ function CybeRp.Jobs.Assign(ply, jobId)
     end
 
     CybeRp.Player.MarkDirty(ply, "job")
+    hook.Run("CybeRp_JobChanged", ply, job.id)
+    return true
+end
+
+function CybeRp.Jobs.RequestChange(ply, jobId)
+    local ok, reason = CybeRp.Jobs.Assign(ply, jobId)
+    if not ok then
+        return false, reason
+    end
     return true
 end
 
