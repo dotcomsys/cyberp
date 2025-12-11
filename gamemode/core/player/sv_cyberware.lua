@@ -36,6 +36,25 @@ local function markDirty(ply)
     end
 end
 
+local function countInstalled(data)
+    local count = 0
+    for _ in pairs(data.cyberware or {}) do
+        count = count + 1
+    end
+    return count
+end
+
+local function slotOccupied(data, slot)
+    if not slot then return false end
+    for id in pairs(data.cyberware or {}) do
+        local def = CybeRp.Cyberware.GetDefinition(id)
+        if def and def.slot == slot then
+            return id
+        end
+    end
+    return false
+end
+
 function CybeRp.Cyberware.GetDefinition(id)
     return catalog()[id]
 end
@@ -84,6 +103,25 @@ function CybeRp.Cyberware.Install(ply, id)
     if not def then return false, "unknown cyberware" end
 
     local data = ply:GetCybeData()
+    local installed = data.cyberware or {}
+
+    -- Prevent duplicate installs.
+    if installed[id] then
+        return false, "already installed"
+    end
+
+    -- Enforce per-slot exclusivity.
+    local existingInSlot = slotOccupied(data, def.slot)
+    if existingInSlot then
+        return false, "slot occupied (" .. tostring(def.slot) .. ")"
+    end
+
+    -- Enforce global limit.
+    local limit = CybeRp.Config and CybeRp.Config.CyberwareLimit or 8
+    if countInstalled(data) >= limit then
+        return false, "cyberware limit reached"
+    end
+
     data.cyberware[id] = true
 
     CybeRp.Player.RecalculateDerived(ply)
@@ -103,6 +141,17 @@ function CybeRp.Cyberware.Remove(ply, id)
     markDirty(ply)
 
     print(("[CybeRp] Removed cyberware %s from %s"):format(id, ply:Nick()))
+    return true
+end
+
+function CybeRp.Cyberware.Activate(ply, id)
+    if not IsValid(ply) then return false, "invalid player" end
+    local def = CybeRp.Cyberware.GetDefinition(id)
+    if not def then return false, "unknown cyberware" end
+    if def.passive then return false, "passive cyberware" end
+
+    -- Hook point for future active ability logic.
+    hook.Run("CybeRp_Cyberware_Activate", ply, def)
     return true
 end
 
