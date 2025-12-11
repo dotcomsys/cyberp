@@ -17,6 +17,14 @@ local function getActiveTable(ply)
     return World.Contracts.active[sid]
 end
 
+-- Marker registry (positions keyed by target id)
+World.Markers = World.Markers or {}
+
+function World.RegisterMarker(id, pos)
+    if not id or not pos then return end
+    World.Markers[id] = pos
+end
+
 -- Objective hooks
 function World:GetContractsForPlayer(ply)
     local active = getActiveTable(ply)
@@ -30,6 +38,7 @@ function World:GetContractsForPlayer(ply)
             entry.status = a.status or "active"
             entry.progress = a.progress or 0
             entry.reason = a.reason
+            entry.target = c.target
         end
         list[#list + 1] = entry
     end
@@ -110,6 +119,11 @@ local function expireContracts()
 end
 
 timer.Create("CybeRp_Contracts_Expire", 15, 0, expireContracts)
+
+-- Example marker registrations (replace with map-specific positions)
+World.RegisterMarker("drop_zone", Vector(0, 0, 0))
+World.RegisterMarker("raid_site", Vector(100, 0, 0))
+World.RegisterMarker("escort_point", Vector(200, 0, 0))
 
 -- Objective hooks
 hook.Add("CybeRpTerminalHacked", "CybeRp_Contracts_HackObjective", function(ply, terminalId, success)

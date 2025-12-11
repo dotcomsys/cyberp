@@ -111,6 +111,22 @@ local function drawContractsBadge()
     CybeRp.UI.DrawShadowedText(text, "CybeRp.Small", x + pad, y + bh / 2, colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 end
 
+local function drawObjectiveMarkers()
+    if not CybeRp.UI.Settings or not CybeRp.UI.Settings.contractMarkers then return end
+    local contracts = CybeRp.ClientState and CybeRp.ClientState.contracts or {}
+    for _, c in ipairs(contracts or {}) do
+        if c.active and c.target then
+            local pos = CybeRp.World and CybeRp.World.Markers and CybeRp.World.Markers[c.target]
+            if pos then
+                local screen = pos:ToScreen()
+                if screen.visible then
+                    draw.SimpleTextOutlined(c.type or c.id or "OBJ", "CybeRp.Tiny", screen.x, screen.y, colors.accent, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
+                end
+            end
+        end
+    end
+end
+
 function CybeRp.UI.HUD.DrawTargetHint(text)
     local w, h = 320, 36
     local x = (ScrW() - w) / 2
@@ -143,5 +159,6 @@ hook.Add("HUDPaint", "CybeRp_HUD", function()
     end
 
     drawContractsBadge()
+    drawObjectiveMarkers()
 end)
 
