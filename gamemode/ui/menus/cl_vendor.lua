@@ -3,7 +3,11 @@ CybeRp.UI = CybeRp.UI or {}
 CybeRp.UI.Vendor = CybeRp.UI.Vendor or {}
 
 local function buildVendorFrame(data)
-    local frame = CybeRp.UI.MakeWindow("vendor", "Vendor", 480, 560)
+    local title = "Vendor"
+    if data.type == "blackmarket" then
+        title = "Black Market"
+    end
+    local frame = CybeRp.UI.MakeWindow("vendor", title, 520, 600)
 
     if IsValid(frame.Body) then frame.Body:Remove() end
     frame.Body = vgui.Create("DPanel", frame)
@@ -42,7 +46,7 @@ local function buildVendorFrame(data)
         desc:SetTall(24)
 
         local btnBuy = vgui.Create("CybeRpPanelButton", row)
-        btnBuy:SetText("Buy (" .. (entry.price or 0) .. "₡)")
+        btnBuy:SetText("Buy (" .. (entry.buyPrice or entry.price or 0) .. "₡)")
         btnBuy:SetWide(120)
         btnBuy:Dock(RIGHT)
         btnBuy:DockMargin(8, 8, 8, 8)
@@ -54,7 +58,7 @@ local function buildVendorFrame(data)
         end
 
         local btnSell = vgui.Create("CybeRpPanelButton", row)
-        btnSell:SetText("Sell")
+        btnSell:SetText("Sell (" .. (entry.sellPrice or math.floor((entry.buyPrice or entry.price or 0) * 0.5)) .. "₡)")
         btnSell:SetWide(80)
         btnSell:Dock(RIGHT)
         btnSell:DockMargin(0, 8, 0, 8)

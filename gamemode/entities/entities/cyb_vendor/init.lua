@@ -19,7 +19,10 @@ function ENT:AcceptInput(name, activator)
 
     if CybeRp.Net and CybeRp.Net.PushVendorStock then
         local vendorType = self:GetVendorType() or "general"
-        local stock = CybeRp.Economy and CybeRp.Economy.BuildVendorStock and CybeRp.Economy.BuildVendorStock(self.Stock or {})
+        local stock = {}
+        if CybeRp.Economy and CybeRp.Economy.GetVendorStockForPlayer then
+            stock = CybeRp.Economy.GetVendorStockForPlayer(activator, vendorType, self.Stock)
+        end
         CybeRp.Net.PushVendorStock(activator, {
             type = vendorType,
             stock = stock or {}
