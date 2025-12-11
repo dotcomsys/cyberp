@@ -20,6 +20,25 @@ function CybeRp.Inventory.Sync(ply, partial)
     sendInventory(ply, payload)
 end
 
+function CybeRp.Inventory.Load(ply)
+    if not IsValid(ply) then return end
+    local sid = ply:SteamID64()
+    local loaded = {}
+
+    if CybeRp.DB and CybeRp.DB.LoadInventory then
+        loaded = CybeRp.DB.LoadInventory(sid) or {}
+    end
+
+    CybeRp.Inventory.ApplyLoadedInventory(ply, loaded)
+    CybeRp.Inventory.Sync(ply)
+end
+
+function CybeRp.Inventory.Save(ply)
+    if not IsValid(ply) then return end
+    if not CybeRp.DB or not CybeRp.DB.SaveInventory then return end
+    CybeRp.DB.SaveInventory(ply:SteamID64(), CybeRp.Inventory.Get(ply))
+end
+
 function CybeRp.Inventory.AddItem(ply, item, amount)
     if not IsValid(ply) then return false end
     amount = math.max(1, amount or 1)

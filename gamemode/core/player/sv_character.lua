@@ -147,8 +147,8 @@ function CybeRp.Player.Save(ply, silent)
         CybeRp.DB.SaveCharacter(sid, ply.CybeData)
     end
 
-    if CybeRp.DB and CybeRp.DB.SaveInventory and CybeRp.Inventory then
-        CybeRp.DB.SaveInventory(sid, CybeRp.Inventory.Get(ply))
+    if CybeRp.Inventory and CybeRp.Inventory.Save then
+        CybeRp.Inventory.Save(ply)
     end
 
     CybeRp.Player.FlushDirty(ply)
