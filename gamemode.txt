@@ -1,0 +1,10 @@
+"cyberp"
+{
+    "base"        "sandbox"
+    "title"       "CybeRp"
+    "author"      "Unsound Studios"
+    "website"     "Unsound-Studios.com"
+    "menusystem"  "1"
+}
+
+
