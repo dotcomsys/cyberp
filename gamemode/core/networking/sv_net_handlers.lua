@@ -188,4 +188,37 @@ net.Receive(NET.VENDOR_SELL, function(_, ply)
     CybeRp.Economy.HandleSell(ply, itemId, amount)
 end)
 
+-- Hack request: client asks to start a hack (server validates and kicks off minigame data)
+net.Receive(NET.HACK_REQUEST, function(_, ply)
+    local ent = net.ReadEntity()
+    local targetId = net.ReadString()
+    if not IsValid(ply) or not IsValid(ent) then return end
+    if not CybeRp.World or not CybeRp.World.BeginTerminalHack then return end
+
+    local meta = {
+        id = targetId ~= "" and targetId or ent:GetNWString("CybeRp_TerminalId", "terminal_generic"),
+        hackTime = 6,
+        cooldown = 75,
+        difficulty = 0.5,
+        district = ent:GetNWString("CybeRp_TerminalDistrict", "unknown"),
+        maxDistance = 160,
+    }
+    CybeRp.World:BeginTerminalHack(ply, ent, meta, true) -- true to signal minigame kickoff
+end)
+
+-- Receive hack minigame completion (true = success, false = failure)
+net.Receive(NET.HACK_RESULT, function(_, ply)
+    local success = net.ReadBool()
+    if not CybeRp.World or not CybeRp.World.Terminals then return end
+    local active = CybeRp.World.Terminals.active[ply]
+    if not active or not IsValid(active.ent) then return end
+
+    if success then
+        CybeRp.World:FinishTerminalHack(ply, active.ent, active.meta)
+    else
+        CybeRp.World:OnTerminalBreach(ply, active.ent, active.meta)
+    end
+    CybeRp.World.Terminals.active[ply] = nil
+end)
+
 

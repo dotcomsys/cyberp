@@ -32,7 +32,7 @@ function World:BroadcastAlert(message, level)
     end
 end
 
-function World:BeginTerminalHack(ply, ent, meta)
+function World:BeginTerminalHack(ply, ent, meta, startMinigame)
     if not IsValid(ply) or not IsValid(ent) or not meta then return end
 
     local cd = World:GetTerminalCooldown(meta.id)
@@ -48,6 +48,17 @@ function World:BeginTerminalHack(ply, ent, meta)
     World.Terminals.active[ply] = { ent = ent, meta = meta, endsAt = CurTime() + duration }
     ent:EmitSound("buttons/combine_button7.wav", 70)
     ply:ChatPrint("[Terminal] Breach attempt started...")
+
+    if startMinigame then
+        net.Start("cyberp_hack_minigame")
+            net.WriteFloat(duration)
+            net.WriteUInt(4, 5)
+            net.WriteString("W")
+            net.WriteString("A")
+            net.WriteString("S")
+            net.WriteString("D")
+        net.Send(ply)
+    end
 
     timer.Create(timerId .. "_check", 0.5, math.max(1, math.ceil(duration / 0.5)), function()
         if not IsValid(ply) or not IsValid(ent) then

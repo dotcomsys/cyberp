@@ -24,7 +24,7 @@ function ENT:Use(activator)
         maxDistance = 160,
     }
     if CybeRp.World and CybeRp.World.BeginTerminalHack then
-        CybeRp.World:BeginTerminalHack(activator, self, meta)
+        CybeRp.World:BeginTerminalHack(activator, self, meta, true)
     end
 end
 
