@@ -22,3 +22,10 @@ CybeRp.Config.JailPos = CybeRp.Config.JailPos or Vector(0, 0, 0)
 CybeRp.Config.JailAng = CybeRp.Config.JailAng or Angle(0, 0, 0)
 CybeRp.Config.ReleasePos = CybeRp.Config.ReleasePos or Vector(100, 0, 0)
 
+-- Objective markers (replace with map-accurate positions)
+CybeRp.Config.Markers = CybeRp.Config.Markers or {
+    drop_zone = Vector(1500, -500, 80),
+    raid_site = Vector(-900, 1200, 80),
+    escort_point = Vector(400, 600, 80),
+}
+

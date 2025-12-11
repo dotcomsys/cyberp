@@ -122,9 +122,11 @@ timer.Create("CybeRp_Contracts_Expire", 15, 0, expireContracts)
 
 -- Example marker registrations (replace with map-specific positions)
 -- TODO: replace with map-specific coordinates. Example placeholders near origin:
-World.RegisterMarker("drop_zone", Vector(512, 256, 16))
-World.RegisterMarker("raid_site", Vector(-256, 512, 32))
-World.RegisterMarker("escort_point", Vector(128, -384, 16))
+if CybeRp.Config and CybeRp.Config.Markers then
+    for id, pos in pairs(CybeRp.Config.Markers) do
+        World.RegisterMarker(id, pos)
+    end
+end
 
 -- Objective hooks
 hook.Add("CybeRpTerminalHacked", "CybeRp_Contracts_HackObjective", function(ply, terminalId, success)

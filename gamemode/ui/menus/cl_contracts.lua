@@ -85,6 +85,13 @@ local function buildContractsFrame(data)
             tgt:SizeToContents()
         end
 
+        local prog = vgui.Create("DLabel", row)
+        prog:SetFont("CybeRp.Tiny")
+        prog:SetText("Progress: " .. tostring(c.progress or 0))
+        prog:Dock(LEFT)
+        prog:DockMargin(12, 0, 0, 8)
+        prog:SizeToContents()
+
         local btnAccept = vgui.Create("CybeRpPanelButton", row)
         btnAccept:SetText(active and "Active" or "Accept")
         btnAccept:SetWide(90)

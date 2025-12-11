@@ -12,6 +12,8 @@ function ENT:Initialize()
     self:SetMaxYawSpeed(90)
     self:SetHealth(120)
     self:SetMaxHealth(120)
+    self.PathIndex = 1
+    self.TimeoutAt = CurTime() + 300
 end
 
 function ENT:Think()
@@ -27,6 +29,12 @@ function ENT:Think()
 
     if self:Health() <= 0 then
         hook.Run("CybeRp_EscortFailed", self, self:GetEscortId(), "dead")
+        self:Remove()
+        return
+    end
+
+    if CurTime() >= self.TimeoutAt then
+        hook.Run("CybeRp_EscortFailed", self, self:GetEscortId(), "timeout")
         self:Remove()
     end
 end
