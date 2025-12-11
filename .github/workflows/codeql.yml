@@ -21,7 +21,7 @@ on:
 
 jobs:
   analyze:
-    # Skip when no JS/TS files to avoid CodeQL fatal "no source code seen".
+    # Skip if no JS/TS sources are present (this repo is primarily Lua).
     if: ${{ hashFiles('**/*.js', '**/*.ts', '**/*.jsx', '**/*.tsx') != '' }}
     name: Analyze (${{ matrix.language }})
     # Runner size impacts CodeQL analysis time. To learn more, please see:
