@@ -5,10 +5,10 @@ local World = CybeRp.World
 World.Contracts = World.Contracts or { active = {} }
 
 local CONTRACT_POOL = {
-    { id = "deliver_datacube", type = "delivery", reward = 150, desc = "Deliver a datacube to the safe drop.", duration = 900 },
-    { id = "hack_terminal", type = "hack", reward = 200, desc = "Breach a marked terminal.", duration = 900 },
-    { id = "escort_asset", type = "escort", reward = 250, desc = "Escort an asset through the docks.", duration = 900 },
-    { id = "raid_scout", type = "raid", reward = 220, desc = "Scout a raid entry point.", duration = 900 },
+    { id = "deliver_datacube", type = "delivery", reward = 150, desc = "Deliver a datacube to the safe drop.", duration = 900, target = "drop_zone" },
+    { id = "hack_terminal", type = "hack", reward = 200, desc = "Breach a marked terminal.", duration = 900, target = "terminal" },
+    { id = "escort_asset", type = "escort", reward = 250, desc = "Escort an asset through the docks.", duration = 900, target = "escort_point" },
+    { id = "raid_scout", type = "raid", reward = 220, desc = "Scout a raid entry point.", duration = 900, target = "raid_site" },
 }
 
 local function getActiveTable(ply)
@@ -18,19 +18,6 @@ local function getActiveTable(ply)
 end
 
 -- Objective hooks
-hook.Add("CybeRpTerminalHacked", "CybeRp_Contracts_HackObjective", function(ply, terminalId, success)
-    if not success then return end
-    local active = getActiveTable(ply)
-    for id, a in pairs(active) do
-        local c = findContract(id)
-        if c and c.type == "hack" then
-            World:CompleteContract(ply, id)
-            break
-        end
-    end
-end)
-
-
 function World:GetContractsForPlayer(ply)
     local active = getActiveTable(ply)
     local list = {}
@@ -40,7 +27,9 @@ function World:GetContractsForPlayer(ply)
         if a then
             entry.active = true
             entry.deadline = a.deadline
-            entry.completed = a.completed
+            entry.status = a.status or "active"
+            entry.progress = a.progress or 0
+            entry.reason = a.reason
         end
         list[#list + 1] = entry
     end
@@ -62,7 +51,7 @@ function World:AcceptContract(ply, contractId)
     active[contractId] = {
         started = CurTime(),
         deadline = CurTime() + (c.duration or 900),
-        completed = false,
+        status = "active",
         progress = 0,
     }
     if CybeRp.Net and CybeRp.Net.PushContracts then
@@ -89,6 +78,19 @@ function World:CompleteContract(ply, contractId)
     end
 end
 
+function World:FailContract(ply, contractId, reason)
+    if not IsValid(ply) then return end
+    local c = findContract(contractId)
+    if not c then return end
+    local active = getActiveTable(ply)
+    if not active[contractId] then return end
+    active[contractId] = nil
+    hook.Run("CybeRp_ContractFailed", ply, c, reason)
+    if CybeRp.Net and CybeRp.Net.PushContracts then
+        CybeRp.Net.PushContracts(ply, World:GetContractsForPlayer(ply))
+    end
+end
+
 local function expireContracts()
     for _, ply in ipairs(player.GetHumans()) do
         local active = World.Contracts.active[ply:SteamID64()]
@@ -96,7 +98,7 @@ local function expireContracts()
             local changed = false
             for id, a in pairs(active) do
                 if a.deadline and CurTime() > a.deadline then
-                    active[id] = nil
+                    World:FailContract(ply, id, "expired")
                     changed = true
                 end
             end
@@ -108,5 +110,41 @@ local function expireContracts()
 end
 
 timer.Create("CybeRp_Contracts_Expire", 15, 0, expireContracts)
+
+-- Objective hooks
+hook.Add("CybeRpTerminalHacked", "CybeRp_Contracts_HackObjective", function(ply, terminalId, success)
+    if not success then return end
+    local active = getActiveTable(ply)
+    for id, a in pairs(active) do
+        local c = findContract(id)
+        if c and c.type == "hack" then
+            World:CompleteContract(ply, id)
+            break
+        end
+    end
+end)
+
+hook.Add("CybeRp_DeliveryComplete", "CybeRp_Contracts_DeliveryObjective", function(ply, targetId)
+    local active = getActiveTable(ply)
+    for id, a in pairs(active) do
+        local c = findContract(id)
+        if c and c.type == "delivery" and c.target == targetId then
+            World:CompleteContract(ply, id)
+            break
+        end
+    end
+end)
+
+hook.Add("CybeRp_RaidCompleted", "CybeRp_Contracts_RaidObjective", function(ply, raidId)
+    local active = getActiveTable(ply)
+    for id, a in pairs(active) do
+        local c = findContract(id)
+        if c and c.type == "raid" then
+            World:CompleteContract(ply, id)
+            break
+        end
+    end
+end)
+
 
 

@@ -58,11 +58,23 @@ local function buildContractsFrame(data)
         status:SetFont("CybeRp.Small")
         local active = c.active == true
         local remaining = c.deadline and math.max(0, c.deadline - CurTime()) or 0
-        local statusText = active and string.format("ACTIVE (%.0fs left)", remaining) or "Available"
+        local stateText = active and "ACTIVE" or "Available"
+        if c.status == "failed" then stateText = "Failed" end
+        if c.status == "completed" then stateText = "Completed" end
+        local statusText = active and string.format("%s (%.0fs left)", stateText, remaining) or stateText
         status:SetText(statusText)
         status:Dock(LEFT)
         status:DockMargin(8, 0, 0, 8)
         status:SizeToContents()
+
+        if c.reason then
+            local reason = vgui.Create("DLabel", row)
+            reason:SetFont("CybeRp.Tiny")
+            reason:SetText("Reason: " .. c.reason)
+            reason:Dock(LEFT)
+            reason:DockMargin(12, 0, 0, 8)
+            reason:SizeToContents()
+        end
 
         local btnAccept = vgui.Create("CybeRpPanelButton", row)
         btnAccept:SetText(active and "Active" or "Accept")

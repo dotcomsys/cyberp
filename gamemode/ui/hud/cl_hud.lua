@@ -84,6 +84,31 @@ function CybeRp.UI.HUD.DrawCredits(playerState, x, bottom)
     draw.SimpleText(string.Comma(credits) .. "₡", fonts.header, x, bottom - 6, colors.accent, TEXT_ALIGN_LEFT, TEXT_ALIGN_BOTTOM)
 end
 
+local function drawContractsBadge()
+    local contracts = CybeRp.ClientState and CybeRp.ClientState.contracts or {}
+    local activeCount = 0
+    local nearest = math.huge
+    for _, c in ipairs(contracts or {}) do
+        if c.active and c.deadline then
+            activeCount = activeCount + 1
+            nearest = math.min(nearest, c.deadline - CurTime())
+        end
+    end
+    if activeCount <= 0 then return end
+
+    local text = string.format("CONTRACTS: %d (%.0fs)", activeCount, math.max(0, nearest))
+    local w, h = surface.GetTextSize(text)
+    surface.SetFont("CybeRp.Small")
+    w, h = surface.GetTextSize(text)
+    local pad = 8
+    local bw, bh = w + pad * 2, h + pad
+    local x = ScrW() - bw - 24
+    local y = 24
+    draw.RoundedBox(8, x, y, bw, bh, colors.panel)
+    CybeRp.UI.DrawNeonBorder(bw, bh, 1, colors.accent)
+    CybeRp.UI.DrawShadowedText(text, "CybeRp.Small", x + pad, y + bh / 2, colors.text, TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+end
+
 function CybeRp.UI.HUD.DrawTargetHint(text)
     local w, h = 320, 36
     local x = (ScrW() - w) / 2
@@ -114,5 +139,7 @@ hook.Add("HUDPaint", "CybeRp_HUD", function()
             CybeRp.UI.HUD.DrawTargetHint(hint.text)
         end
     end
+
+    drawContractsBadge()
 end)
 
