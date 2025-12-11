@@ -13,6 +13,8 @@ function Arrest.Jail(ply, duration)
     st.jailed = true
     st.releaseAt = CurTime() + (duration or 60)
     ply:StripWeapons()
+    ply:SetPos(CybeRp.Config.JailPos or Vector(0, 0, 0))
+    ply:SetEyeAngles(CybeRp.Config.JailAng or Angle(0, 0, 0))
     if CybeRp.Net and CybeRp.Net.PushArrest then
         CybeRp.Net.PushArrest(ply, { jailed = true, releaseAt = st.releaseAt })
     end
@@ -22,6 +24,9 @@ function Arrest.Release(ply)
     local st = ensure(ply)
     st.jailed = false
     st.releaseAt = 0
+    if CybeRp.Config.ReleasePos then
+        ply:SetPos(CybeRp.Config.ReleasePos)
+    end
     if CybeRp.Net and CybeRp.Net.PushArrest then
         CybeRp.Net.PushArrest(ply, { jailed = false, releaseAt = 0 })
     end

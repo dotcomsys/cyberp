@@ -144,7 +144,7 @@ local function maintainPresence()
     end
 
     if countByClass("npc_combine_s") < AI.Police.quotas.bots then
-        AI:SpawnSecurityBot(Vector(-2800, 2400, 32), "dock_patrol")
+    AI:SpawnSecurityBot(Vector(-2800, 2400, 32), "dock_patrol")
     end
 
     if countByClass("npc_citizen") < AI.Police.quotas.vendors then
@@ -175,6 +175,32 @@ end)
 
 hook.Add("CybeRp_CrimeRegistered", "CybeRpWorld_PoliceCrimeIntake", function(ply, factionId, severity, note)
     AI:ReportCrime(ply, factionId, severity, note)
+end)
+
+-- Basic patrol pulse: look for wanted players nearby and move toward them
+timer.Create("CybeRpWorld_PatrolScan", 5, 0, function()
+    local wantedPlayers = {}
+    for _, ply in ipairs(player.GetHumans()) do
+        local heat, wanted = 0, false
+        if CybeRp.Heat and CybeRp.Heat.Get then
+            heat, wanted = CybeRp.Heat.Get(ply)
+        end
+        if wanted then
+            wantedPlayers[#wantedPlayers + 1] = ply
+        end
+    end
+
+    if #wantedPlayers == 0 then return end
+
+    for _, ent in ipairs(AI.Police.active or {}) do
+        if IsValid(ent) then
+            local target = table.Random(wantedPlayers)
+            if IsValid(target) then
+                ent:SetLastPosition(target:GetPos())
+                ent:SetSchedule(SCHED_FORCED_GO_RUN)
+            end
+        end
+    end
 end)
 
 -- Arrest/jail placeholder: mark as wanted if heat too high

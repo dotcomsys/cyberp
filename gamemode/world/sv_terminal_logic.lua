@@ -106,6 +106,10 @@ function World:OnTerminalSuccess(ply, ent, meta)
     ply:SetNWInt("CybeRp_DataFragments", ply:GetNWInt("CybeRp_DataFragments") + 2)
     ply:ChatPrint("[Terminal] Access granted. Data siphoned.")
     ent:EmitSound("buttons/button9.wav", 70)
+    if CybeRp.Inventory then
+        CybeRp.Inventory.Add(ply, "data_fragment", 2)
+        CybeRp.Inventory.Sync(ply, { data_fragment = CybeRp.Inventory.Count(ply, "data_fragment") })
+    end
     hook.Run("CybeRpTerminalHacked", ply, meta.id, true)
     debugLog("Terminal %s hacked successfully by %s", tostring(meta.id), ply:Nick())
 end
