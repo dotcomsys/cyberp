@@ -45,7 +45,9 @@ function CybeRp.DB.Initialize()
         );
     ]], INV_TABLE))
 
-    print("[CybeRp] DB Initialized (SQLite)")
+    if CybeRp.Config and CybeRp.Config.Debug then
+        print("[CybeRp] DB Initialized (SQLite)")
+    end
 end
 
 -- Expose table names for the store modules.

@@ -19,6 +19,8 @@ end
 IncludeClientFolder("cyberp/gamemode")
 
 function GM:Initialize()
-    print("[CybeRp] Client Initialized.")
+    if CybeRp.Config.Debug then
+        print("[CybeRp] Client Initialized.")
+    end
 end
 

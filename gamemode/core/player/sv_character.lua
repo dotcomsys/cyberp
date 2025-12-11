@@ -153,7 +153,7 @@ function CybeRp.Player.Save(ply, silent)
 
     CybeRp.Player.FlushDirty(ply)
 
-    if not silent then
+    if not silent and CybeRp.Config and CybeRp.Config.Debug then
         print(("[CybeRp] Saved data for %s"):format(ply:Nick()))
     end
 end

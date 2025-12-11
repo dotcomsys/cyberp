@@ -25,5 +25,7 @@ include("config/sh_items.lua")
 include("config/sh_cyberware.lua")
 include("config/sh_economy.lua")
 
-print("[CybeRp] Shared Loaded")
+if CybeRp.Config.Debug then
+    print("[CybeRp] Shared Loaded")
+end
 

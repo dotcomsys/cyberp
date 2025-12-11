@@ -130,7 +130,9 @@ function CybeRp.Cyberware.Install(ply, id)
     CybeRp.Player.RecalculateDerived(ply)
     markDirty(ply)
 
-    print(("[CybeRp] Installed cyberware %s for %s"):format(id, ply:Nick()))
+    if CybeRp.Config and CybeRp.Config.Debug then
+        print(("[CybeRp] Installed cyberware %s for %s"):format(id, ply:Nick()))
+    end
     return true
 end
 
@@ -143,7 +145,9 @@ function CybeRp.Cyberware.Remove(ply, id)
     CybeRp.Player.RecalculateDerived(ply)
     markDirty(ply)
 
-    print(("[CybeRp] Removed cyberware %s from %s"):format(id, ply:Nick()))
+    if CybeRp.Config and CybeRp.Config.Debug then
+        print(("[CybeRp] Removed cyberware %s from %s"):format(id, ply:Nick()))
+    end
     return true
 end
 

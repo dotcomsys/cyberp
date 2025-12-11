@@ -58,6 +58,8 @@ IncludeServerFolder("cyberp/gamemode")
 
 -- Initialize gamemode
 function GM:Initialize()
-    print("[CybeRp] Server Initialized.")
+    if CybeRp.Config.Debug then
+        print("[CybeRp] Server Initialized.")
+    end
 end
 

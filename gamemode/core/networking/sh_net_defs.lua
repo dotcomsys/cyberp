@@ -124,6 +124,8 @@ if SERVER then
         util.AddNetworkString(name)
     end
 
-    print("[CybeRp] Networking Initialized")
+    if CybeRp.Config and CybeRp.Config.Debug then
+        print("[CybeRp] Networking Initialized")
+    end
 end
 
