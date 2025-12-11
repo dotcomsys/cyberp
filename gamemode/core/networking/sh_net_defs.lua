@@ -32,6 +32,7 @@ define("VENDOR_STOCK", "cyberp_vendor_stock")
 define("VENDOR_BUY", "cyberp_vendor_buy")
 define("VENDOR_SELL", "cyberp_vendor_sell")
 define("HACK_REQUEST", "cyberp_hack_request")
+define("HEAT_SYNC", "cyberp_heat_sync")
 
 -- Payload codecs: default to PON + util.Compress, fallback to JSON.
 local CODECS = {

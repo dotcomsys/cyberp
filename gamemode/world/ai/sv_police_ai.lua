@@ -7,6 +7,7 @@ local AI = CybeRp.World.AI
 
 AI.Police = AI.Police or { active = {}, quotas = { drones = 2, bots = 2, vendors = 1 } }
 AI.CrimeQueue = AI.CrimeQueue or {}
+AI.Heat = AI.Heat or {}
 
 local function debugLog(msg, ...)
     if CybeRp.Config and CybeRp.Config.Debug then
@@ -97,6 +98,11 @@ end
 
 function AI:ReportCrime(ply, factionId, severity, note)
     if not IsValid(ply) then return end
+    -- Increase heat
+    if CybeRp.Heat and CybeRp.Heat.Add then
+        CybeRp.Heat.Add(ply, (severity or 1) * 10)
+        World:BroadcastAlert(("Crime reported: %s"):format(note or "activity"), "warning")
+    end
     table.insert(AI.CrimeQueue, {
         ply = ply,
         faction = factionId or "authority",
@@ -118,6 +124,19 @@ local function processCrimeQueue()
         World:BroadcastAlert(("Suspicious activity near %s"):format(entry.ply:Nick()), "warning")
     end
 end
+
+-- Heat decay
+timer.Create("CybeRpWorld_HeatDecay", 30, 0, function()
+    for _, ply in ipairs(player.GetHumans()) do
+        if CybeRp.Heat and CybeRp.Heat.Decay then
+            CybeRp.Heat.Decay(ply, 2)
+            if CybeRp.Net and CybeRp.Net.PushHeat then
+                local h, wanted = CybeRp.Heat.Get(ply)
+                CybeRp.Net.PushHeat(ply, { heat = h, wanted = wanted })
+            end
+        end
+    end
+end)
 
 local function maintainPresence()
     if countByClass("npc_cscanner") < AI.Police.quotas.drones then
@@ -157,5 +176,21 @@ end)
 hook.Add("CybeRp_CrimeRegistered", "CybeRpWorld_PoliceCrimeIntake", function(ply, factionId, severity, note)
     AI:ReportCrime(ply, factionId, severity, note)
 end)
+
+-- Arrest/jail placeholder: mark as wanted if heat too high
+hook.Add("Think", "CybeRpWorld_PoliceWantedCheck", function()
+    for _, ply in ipairs(player.GetHumans()) do
+        local heat = 0
+        local wanted = false
+        if CybeRp.Heat and CybeRp.Heat.Get then
+            heat, wanted = CybeRp.Heat.Get(ply)
+        end
+        if heat >= (CybeRp.Config and CybeRp.Config.HeatWantedThreshold or 50) and not wanted then
+            CybeRp.Heat.SetWanted(ply, true)
+            World:BroadcastAlert(("Warrant issued for %s"):format(ply:Nick()), "alert")
+        end
+    end
+end)
+
 
 

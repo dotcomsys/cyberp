@@ -33,6 +33,14 @@ function CybeRp.NetActivateCyberware(cyberId)
     net.SendToServer()
 end
 
+function CybeRp.NetHackRequest(ent, targetId)
+    if not IsValid(ent) then return end
+    net.Start(NET.HACK_REQUEST)
+        net.WriteEntity(ent)
+        net.WriteString(targetId or "")
+    net.SendToServer()
+end
+
 local function safeCall(handler, payload)
     if not handler then return end
     local ok, err = pcall(handler, payload or {})
@@ -118,6 +126,11 @@ local HANDLERS = {
     end,
     [NET.VENDOR_STOCK] = function(payload)
         dispatchHook("VendorStock", payload)
+    end,
+    [NET.HEAT_SYNC] = function(payload)
+        CS.heat = payload and payload.heat or CS.heat
+        CS.wanted = payload and payload.wanted or false
+        dispatchHook("Heat", payload)
     end,
     [NET.RPC] = handleRPC
 }
