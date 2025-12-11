@@ -121,9 +121,10 @@ end
 timer.Create("CybeRp_Contracts_Expire", 15, 0, expireContracts)
 
 -- Example marker registrations (replace with map-specific positions)
-World.RegisterMarker("drop_zone", Vector(0, 0, 0))
-World.RegisterMarker("raid_site", Vector(100, 0, 0))
-World.RegisterMarker("escort_point", Vector(200, 0, 0))
+-- TODO: replace with map-specific coordinates. Example placeholders near origin:
+World.RegisterMarker("drop_zone", Vector(512, 256, 16))
+World.RegisterMarker("raid_site", Vector(-256, 512, 32))
+World.RegisterMarker("escort_point", Vector(128, -384, 16))
 
 -- Objective hooks
 hook.Add("CybeRpTerminalHacked", "CybeRp_Contracts_HackObjective", function(ply, terminalId, success)
@@ -167,6 +168,15 @@ hook.Add("CybeRp_EscortArrived", "CybeRp_Contracts_EscortObjective", function(pl
         if c and c.type == "escort" then
             World:CompleteContract(ply, id)
             break
+        end
+    end
+end)
+
+hook.Add("CybeRp_EscortFailed", "CybeRp_Contracts_EscortFail", function(ent, escortId, reason)
+    for _, ply in ipairs(player.GetHumans()) do
+        local active = getActiveTable(ply)
+        if active["escort_asset"] then
+            World:FailContract(ply, "escort_asset", reason or "escort failed")
         end
     end
 end)

@@ -10,6 +10,8 @@ function ENT:Initialize()
     self:CapabilitiesAdd(CAP_ANIMATEDFACE + CAP_TURN_HEAD + CAP_MOVE_GROUND)
     self:SetUseType(SIMPLE_USE)
     self:SetMaxYawSpeed(90)
+    self:SetHealth(120)
+    self:SetMaxHealth(120)
 end
 
 function ENT:Think()
@@ -18,6 +20,14 @@ function ENT:Think()
         local pos = CybeRp.World.Markers[targetId]
         self:SetLastPosition(pos)
         self:SetSchedule(SCHED_FORCED_GO_RUN)
+    end
+
+    if self.NextCheck and CurTime() < self.NextCheck then return end
+    self.NextCheck = CurTime() + 1
+
+    if self:Health() <= 0 then
+        hook.Run("CybeRp_EscortFailed", self, self:GetEscortId(), "dead")
+        self:Remove()
     end
 end
 
