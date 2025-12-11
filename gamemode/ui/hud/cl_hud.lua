@@ -121,6 +121,8 @@ local function drawObjectiveMarkers()
                 local screen = pos:ToScreen()
                 if screen.visible then
                     draw.SimpleTextOutlined(c.type or c.id or "OBJ", "CybeRp.Tiny", screen.x, screen.y, colors.accent, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER, 1, color_black)
+                    surface.SetDrawColor(colors.accent)
+                    surface.DrawCircle(screen.x, screen.y, 12, colors.accent.r, colors.accent.g, colors.accent.b)
                 end
             end
         end
