@@ -22,6 +22,21 @@ end
 
 AddClientFolder("cyberp/gamemode")
 
+-- SHARED FILES (server include)
+local function IncludeSharedFolder(path)
+    local files, dirs = file.Find(path .. "/*", "LUA")
+
+    for _, f in ipairs(files) do
+        if string.StartWith(f, "sh_") then
+            include(path .. "/" .. f)
+        end
+    end
+
+    for _, d in ipairs(dirs) do
+        IncludeSharedFolder(path .. "/" .. d)
+    end
+end
+
 -- SERVER-ONLY FILES
 local function IncludeServerFolder(path)
     local files, dirs = file.Find(path .. "/*", "LUA")
@@ -37,6 +52,8 @@ local function IncludeServerFolder(path)
     end
 end
 
+-- Load shared modules before server-specific ones
+IncludeSharedFolder("cyberp/gamemode")
 IncludeServerFolder("cyberp/gamemode")
 
 -- Initialize gamemode

@@ -1,0 +1,51 @@
+##############################
+# CybeRp Gamemode Ignore File
+# Private Agents + Dev Files
+##############################
+
+# ===== 1. PRIVATE FOLDERS (DO NOT COMMIT) =====
+agents/
+.cursor/
+.cursorignore
+
+# ===== 2. LUA / GLua Dev Files =====
+*.luac
+*.bak
+*.tmp
+*.old
+
+# Local testing folder
+data/
+logs/
+
+# ===== 3. Editor & IDE =====
+.vscode/
+.idea/
+*.code-workspace
+
+# ===== 4. System Files =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== 5. Temp Build/Cache =====
+cache/
+temp/
+tmp/
+*.log
+.cache/
+.bun/
+Documents/
+
+# ===== 6. Node / Tooling Artifacts =====
+node_modules/
+dist/
+build/
+.bun/
+
+# ===== 7. Git Metadata =====
+*.orig
+*.rej
+
+# ===== 8. Ignore rendered documentation =====
+docs/generated/

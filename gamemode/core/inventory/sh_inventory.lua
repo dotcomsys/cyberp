@@ -1,15 +1,31 @@
 CybeRp.Inventory = CybeRp.Inventory or {}
 
-function CybeRp.Inventory.Create(ply)
-    ply.Inventory = ply.Inventory or {}
+CybeRp.Inventory.MAX_SLOTS = 24
+
+local function ensure(ply)
+    if not IsValid(ply) then return {} end
+    ply.CybeInventory = ply.CybeInventory or {}
+    return ply.CybeInventory
 end
 
-function CybeRp.Inventory.Add(ply, item, amount)
-    amount = amount or 1
-    ply.Inventory[item] = (ply.Inventory[item] or 0) + amount
+function CybeRp.Inventory.Ensure(ply)
+    return ensure(ply)
 end
 
 function CybeRp.Inventory.Get(ply)
-    return ply.Inventory or {}
+    return ensure(ply)
+end
+
+function CybeRp.Inventory.Count(ply, item)
+    return ensure(ply)[item] or 0
+end
+
+function CybeRp.Inventory.Has(ply, item, amount)
+    amount = amount or 1
+    return CybeRp.Inventory.Count(ply, item) >= amount
+end
+
+function CybeRp.Inventory.Snapshot(invTable)
+    return table.Copy(invTable or {})
 end
 

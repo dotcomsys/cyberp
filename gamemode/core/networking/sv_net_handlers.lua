@@ -1,0 +1,87 @@
+-- CybeRp Networking - server handlers
+-- Responsible for all net.Start/net.Send usage.
+
+if not SERVER then return end
+
+CybeRp = CybeRp or {}
+CybeRp.Networking = CybeRp.Networking or {}
+
+local NET = CybeRp.NET
+local Net = CybeRp.Networking
+
+local function sendMessage(msgName, target, payload, codec)
+    if not msgName then return false end
+
+    net.Start(msgName)
+    local ok = Net.WritePayload(payload, codec)
+    if not ok then
+        ErrorNoHalt(string.format("[CybeRp][Net] Failed to encode payload for %s\n", msgName))
+        return false
+    end
+
+    if istable(target) then
+        net.Send(target)
+    elseif IsValid(target) then
+        net.Send(target)
+    else
+        net.Broadcast()
+    end
+
+    return true
+end
+
+-- Push a player stat snapshot (full or partial).
+function Net.PushPlayerData(target, payload)
+    return sendMessage(NET.PLAYER_DATA, target, payload, "pon")
+end
+
+-- Sync inventory snapshot or delta to a single player.
+function Net.PushInventory(target, payload)
+    return sendMessage(NET.INVENTORY_UPDATE, target, payload, "pon")
+end
+
+-- Sync cyberware snapshot or delta.
+function Net.PushCyberware(target, payload)
+    return sendMessage(NET.CYBERWARE_UPDATE, target, payload, "pon")
+end
+
+-- Notify job/faction/role changes.
+function Net.PushJobUpdate(target, payload)
+    return sendMessage(NET.JOB_UPDATE, target, payload, "json")
+end
+
+-- Broadcast world events (alarms, wars, police alerts).
+function Net.BroadcastWorldEvent(eventName, payload)
+    payload = payload or {}
+    payload.event = payload.event or eventName
+    payload.when = payload.when or CurTime()
+
+    return sendMessage(NET.WORLD_EVENT, nil, payload, "json")
+end
+
+-- Convenience for directed alerts (still uses WORLD_EVENT pipe).
+function Net.SendAlert(target, kind, payload)
+    payload = payload or {}
+    payload.event = payload.event or kind or "alert"
+    payload.scope = payload.scope or (IsValid(target) and "direct" or "broadcast")
+    payload.when = payload.when or CurTime()
+
+    return sendMessage(NET.WORLD_EVENT, target, payload, "json")
+end
+
+-- Server -> client RPC helper. Clients dispatch via hook: CybeRp_RPC_<method>.
+function Net.SendRPC(target, method, args)
+    if not isstring(method) or method == "" then
+        return false
+    end
+
+    local payload = {
+        method = method,
+        args = args or {},
+        ts = CurTime()
+    }
+
+    return sendMessage(NET.RPC, target, payload, "pon")
+end
+
+

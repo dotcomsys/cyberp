@@ -17,6 +17,7 @@ CybeRp.NET = {
 }
 
 -- Load shared configs
+include("config/sh_config_manager.lua")
 include("config/sh_config.lua")
 include("config/sh_jobs.lua")
 include("config/sh_factions.lua")
