@@ -188,6 +188,9 @@ hook.Add("Think", "CybeRpWorld_PoliceWantedCheck", function()
         if heat >= (CybeRp.Config and CybeRp.Config.HeatWantedThreshold or 50) and not wanted then
             CybeRp.Heat.SetWanted(ply, true)
             World:BroadcastAlert(("Warrant issued for %s"):format(ply:Nick()), "alert")
+            if CybeRp.Arrest and CybeRp.Arrest.Jail then
+                CybeRp.Arrest.Jail(ply, 60)
+            end
         end
     end
 end)

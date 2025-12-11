@@ -1,6 +1,7 @@
 include("cyberp/gamemode/core/player/sh_player_meta.lua")
 include("cyberp/gamemode/core/inventory/sh_inventory.lua")
 include("cyberp/gamemode/core/player/sh_heat.lua")
+include("cyberp/gamemode/core/player/sv_arrest.lua")
 
 CybeRp.Player = CybeRp.Player or {}
 

@@ -122,6 +122,10 @@ function Net.PushHeat(target, payload)
     return sendMessage(NET.HEAT_SYNC, target, payload or {}, "json")
 end
 
+function Net.PushArrest(target, payload)
+    return sendMessage(NET.ARREST_SYNC, target, payload or {}, "json")
+end
+
 -- Server -> client RPC helper. Clients dispatch via hook: CybeRp_RPC_<method>.
 function Net.SendRPC(target, method, args)
     if not isstring(method) or method == "" then

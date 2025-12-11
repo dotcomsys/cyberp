@@ -132,6 +132,10 @@ local HANDLERS = {
         CS.wanted = payload and payload.wanted or false
         dispatchHook("Heat", payload)
     end,
+    [NET.ARREST_SYNC] = function(payload)
+        CS.arrest = payload
+        dispatchHook("Arrest", payload)
+    end,
     [NET.RPC] = handleRPC
 }
 
