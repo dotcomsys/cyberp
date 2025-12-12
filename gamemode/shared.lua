@@ -2,8 +2,8 @@
 
 GM.Name        = "CybeRp"
 GM.Author      = "Unsound Studios"
-GM.Email       = "N/A"
-GM.Website     = "N/A"
+GM.Email       = "info@unsound-studios.com"
+GM.Website     = "https://unsound-studios.com"
 GM.Version     = "0.1-alpha"
 
 CybeRp = CybeRp or {}
